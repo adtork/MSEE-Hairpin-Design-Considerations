@@ -49,7 +49,8 @@ Cons:
 # Option 3: Virtual Wan
 The main advatnage of virtual WAN is by default it offers any to any connectivity across hubs, spokes and branches via the default route table. The hub routers inside the vHub(s) facilitate this routing. It greatly simplies routing by taking away the need to manually create UDRs unless you need Vnet or branch isolation via custom routes. In terms of ExpressRoute, in order to avoid MSEE hairpain, customer would need to enable the hub-hub routing preference. At the time of this artcile if you have two circuits connected to two differet hubs, traffic will still hairpin to the MSEE to reach the other hub. In order to avoid this behavior, you would need to enable the gated preview of hub-hub routing, see here: https://learn.microsoft.com/en-us/azure/virtual-wan/whats-new#preview
 
-![image](https://user-images.githubusercontent.com/55964102/193700309-d125ccf2-5eb5-48da-9842-873c650ac195.png)
+![image](https://user-images.githubusercontent.com/55964102/193703052-df6c92fb-eeb3-40d5-ad90-9de852426ab4.png)
+
 
 Pros:
 
