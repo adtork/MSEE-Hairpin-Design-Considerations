@@ -16,7 +16,9 @@ The simpliest and best peforming option is to simply peer VnetA to VnetB. This a
 Pros:
 
 -Quickest and easiest to implement
+
 -Best peformance because traffic is taking the Microsoft WAN directly to reach the destinatoin VNET and there is no ingress gateway for bottleneck
+
 -Cheapest to maintain as you're not paying for an NVA to route the traffic
 
 Cons:
