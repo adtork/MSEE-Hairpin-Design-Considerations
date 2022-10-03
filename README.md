@@ -1,34 +1,35 @@
-# Best-Practices
+# ExpressRoute Hairpin Design Considerations
 
 # Intro
-In this scneario we are going to talking about hairpinning, also known as MSEE hairpinning whereas traffic leaving one VNET over expressroute egresses to the MSEE (Microsoft Provider Edge) before ingressing to another Vnet. This is the default behavior for intra-region (single express-route circuit) with multiple vnets and inter-regoin (multiple express-route circuits with multple Vnets. Although this design works today and has been around for many years, its discouraged to use this design due to increased latency of the traffic egressing the peering location pops hosting the MSEEs. In this article we are going to discuss the various alternatives to this default behavior and the pluses and minuses of each design. Public documentation on Express-Route hairpinning can be found here: https://learn.microsoft.com/en-us/azure/expressroute/virtual-network-connectivity-guidance
+In this scneario we are going to talking about hairpinning, also known as MSEE hairpinning whereas traffic leaving one VNET over expressroute egresses to the MSEE (Microsoft Provider Edge) before ingressing to another Vnet. This is the default behavior for intra-region (single express-route circuit) with multiple vnets and inter-regoin (multiple express-route circuits with multple Vnets. Although this design works today and has been around for many years, its discouraged to use this design due to increased latency of the traffic egressing the peering location pops hosting the MSEEs. Its important to note, in the near future this behavior will be changed, but its still current at the time of this article. We are going to discuss the various alternatives to this design behavior and the pluses and minuses of each design. Public documentation on Express-Route hairpinning can be found here: https://learn.microsoft.com/en-us/azure/expressroute/virtual-network-connectivity-guidance
 
 # Topology
 ![image](https://user-images.githubusercontent.com/55964102/193679955-089ce726-ac9d-422b-92c8-7233fc473436.png)
 
 
-Lets take the default behavior. If a VM in VnetA wants to talk to a VM in VnetB connected to a single circuit, or in this case two circuits using standard bow-tie, traffic leaves VnetA bypassing the source VnetA gateway, hits the MSEE at the pop location, ingresses to the MSEE in the other region, then finally ingressing VnetB's gateway. We can see how this is not ideal having to hairpin all the way to the provider pop location housing the MSEE. We are going to explore some alternatives topologes and way the pros and cons to each.
+Lets take the default behavior. If a VM in VnetA wants to talk to a VM in VnetB connected to a single circuit, or in this case two circuits using standard bow-tie, traffic leaves VnetA bypassing the source VnetA gateway, hits the MSEE at the pop location, ingresses to the MSEE via the other circuit, then finally ingressing through VnetB's gateway. We can see how this is not ideal having to hairpin all the way to the providers pop location hosting the MSEE. Its important to understand that MSEEs are not in Azure Datacenters but at peering co-location facilities offering connectivity! We are going to explore some alternatives topologes and way the pros and cons of each.
 
 # Option 1: Vnet Peering
-The simpliest and best peforming option is to simply peer VnetA to VnetB. This approach is by far the easiest to implement and best options in terms of performance
+The simpliest and best peforming option is to simply peer VnetA to VnetB. This approach is by far the easiest to implement and best in terms of performance
 
 ![image](https://user-images.githubusercontent.com/55964102/193679218-82c2394f-3564-4730-b982-f5b07ab99f1a.png)
 
 
 Pros:
 
--Quickest and easiest to implement
+-Quick and easiest to implement the peering
 
 -Best peformance because traffic is taking the Microsoft WAN directly to reach the destinatoin VNET and there is no ingress gateway for bottleneck
 
--Cheapest to maintain as you're not paying for an NVA to route the traffic
+-Cheapest to maintain as you're not paying for an NVA to route the traffic or manage UDRs
 
 Cons:
 
--Subject to Vnet peering limits that can quickly be approached with large multi-region designs
+-Subject to Vnet peering limits that can quickly be approached with large multi-region designs (500 limit per Vnet)
+https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/azure-subscription-service-limits#azure-resource-manager-virtual-networking-limits
 
 # Option 2: Connectivity or Transit Vnet hosting NVAs
-For this option we create a new spoke VnetC and peer that to each of our hub Vnets (VnetA and VnetB). In the spoke Vnet we deploy an NVA capable of doing the ipforwarding. For this scenario we could simply do Windows, Linux and enable the forwarding on the NIC and inside the GuestOS. The customer could also choose a third party NVA if they wanted inspection as well. From each Hub (VnetA and VnetB), we would create a UDR pointing to the NVA as next hop in order to reach the destination VNET. Its important to note, you could also connect this VNET to the existing circuit. With no gateway, if you wanted to reach on-premise, you would need to use "Allow Gateway Transit" and "Use Remote Gateway"
+For this option we create a new spoke VnetC and peer that to each of our hub Vnets (VnetA and VnetB). In the spoke Vnet we deploy an NVA capable of doing the ipforwarding. For this scenario we could simply do Windows, Linux and enable the forwarding on the NIC and inside the GuestOS. The customer could also choose a third party NVA if they wanted inspection as well. From each Hub (VnetA and VnetB), we would create a UDR pointing to the NVA in VnetC as next hop in order to reach the destination VNET. Its important to note, you could also connect this VNET to the existing circuit. With no gateway (diagram below), if you wanted to reach on-premise from VnetC, you would need to use "Allow Gateway Transit" and "Use Remote Gateway" on the VNET peering properties. 
 
 ![image](https://user-images.githubusercontent.com/55964102/193691974-85ad8188-52c9-48f9-94f9-b879b4d94afe.png)
 
@@ -36,5 +37,36 @@ For this option we create a new spoke VnetC and peer that to each of our hub Vne
 Pros:
 
 -Traffic will not hairpin to the MSEE pop location, reducing latency
+
+-Full management of NVA, no black box
+
+Cons:
+
+-Cost of the NVA and bandwdith limits on the NVA/VM with ipforwarding
+
+-Complexities of managing UDRs and Route Tables (Its posible to do a summary route to attract the traffic)
+
+# Option 3: Virtual Wan
+The main advatnage of virtual WAN is by default it offers any to any connectivity across hubs, spokes and branches via the default route table. The hub routers inside the vHub(s) facilitate this routing. It greatly simplies routing by taking away the need to manually create UDRs unless you need Vnet or branch isolation via custom routes. In terms of ExpressRoute, in order to avoid MSEE hairpain, customer would need to enable the hub-hub routing preference. At the time of this artcile if you have two circuits connected to two differet hubs, traffic will still hairpin to the MSEE to reach the other hub. In order to avoid this behavior, you would need to enable the gated preview of hub-hub routing, see here: https://learn.microsoft.com/en-us/azure/virtual-wan/whats-new#preview
+
+![image](https://user-images.githubusercontent.com/55964102/193700309-d125ccf2-5eb5-48da-9842-873c650ac195.png)
+
+Pros:
+
+-Simmilar to Vnet peering in option 1, this option is the easiest to implent overall. If you already have a multi hub vWAN setup with Express-Route, you simply need to enable hub to hub feature in order to make the traffic flow work and not hairpn
+
+-Peformance is also just as good as VNET peering as traffic stays on the Microsoft WAN backbone
+
+-There is no additonal cost at the time of this writing to use this feature.
+
+Cons:
+
+-Virtual WAN visability is limited since its a managed Vnet
+
+-No easy way to diagnose if the traffic flow breaks
+
+# Conclusion
+We can see the various topologies above they are alternative approaches to hairpinning to the MSEE when it comes to ExpressRoute Intra and Inter region. Each option has its own pluses and minuses. Depending on the customers environment and workload requirements, they should choose the option that makes the most sense for their environment. As we can see cost, peformance and constraints all play a factor into the decesion. 
+
 
 
