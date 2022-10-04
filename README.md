@@ -10,7 +10,7 @@ In this scneario we are going to talking about hairpinning, also known as MSEE h
 Lets take the default behavior. If a VM in VnetA wants to talk to a VM in VnetB connected to a single circuit, or in this case two circuits using standard bow-tie, traffic leaves VnetA bypassing the source VnetA gateway, hits the MSEE at the pop location, ingresses to the MSEE via the other circuit, then finally ingressing through VnetB's gateway. We can see how this is not ideal having to hairpin all the way to the providers pop location hosting the MSEE. Its important to understand that MSEEs are not in Azure Datacenters but at peering co-location facilities offering connectivity! We are going to explore some alternatives topologes and way the pros and cons of each.
 
 # Option 1: Vnet Peering
-The simpliest and best peforming option is to simply peer VnetA to VnetB. This approach is by far the easiest to implement and best in terms of performance
+The simpliest and best peforming option is to simply peer VnetA to VnetB. This approach is by far the easiest to implement and best in terms of performance. This also holds true via global VNET peering for inter-region. 
 
 ![image](https://user-images.githubusercontent.com/55964102/193679218-82c2394f-3564-4730-b982-f5b07ab99f1a.png)
 
@@ -29,7 +29,7 @@ Cons:
 https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/azure-subscription-service-limits#azure-resource-manager-virtual-networking-limits
 
 # Option 2: Connectivity or Transit Vnet hosting NVAs
-For this option we create a new spoke VnetC and peer that to each of our hub Vnets (VnetA and VnetB). In the spoke Vnet we deploy an NVA capable of doing the ipforwarding. For this scenario we could simply do Windows, Linux and enable the forwarding on the NIC and inside the GuestOS. The customer could also choose a third party NVA if they wanted inspection as well. From each Hub (VnetA and VnetB), we would create a UDR pointing to the NVA in VnetC as next hop in order to reach the destination VNET. Its important to note, you could also connect this VNET to the existing circuit. With no gateway (diagram below), if you wanted to reach on-premise from VnetC, you would need to use "Allow Gateway Transit" and "Use Remote Gateway" on the VNET peering properties. 
+For this option we create a new spoke VnetC and peer that to each of our hub Vnets (VnetA and VnetB). In the spoke Vnet we deploy an NVA capable of doing the ipforwarding. For this scenario we could simply do Windows, Linux and enable the forwarding on the NIC and inside the GuestOS. The customer could also choose a third party NVA if they wanted inspection as well. From each Hub (VnetA and VnetB), we would create a UDR pointing to the NVA in VnetC as next hop in order to reach the destination VNET. We could also take a simmilar approach for inter-region. You could deploy NVAs in each hub (VnetA and VnetB) and then assuming each of those have spokes, the spokes could use those NVAs to transit to other Vnets. We could also connect this VNET (vnetC) to the existing circuit as well and still use the NVA to overide the gateway. With no gateway (diagram below), if you wanted to reach on-premise from VnetC, you would need to use "Allow Gateway Transit" and "Use Remote Gateway" on the VNET peering properties. 
 
 ![image](https://user-images.githubusercontent.com/55964102/193691974-85ad8188-52c9-48f9-94f9-b879b4d94afe.png)
 
@@ -38,7 +38,7 @@ Pros:
 
 -Traffic will not hairpin to the MSEE pop location, reducing latency
 
--Full management of NVA, no black box
+-Full management of NVA, no black box for inspection and routing. 
 
 Cons:
 
