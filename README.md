@@ -71,7 +71,6 @@ Cons:
 -No easy way to diagnose if the traffic flow breaks
 
 # Conclusion
-We can see the various topologies above they are alternative approaches to hairpinning to the MSEE when it comes to ExpressRoute Intra and Inter region. Each option has its own pluses and minuses. Depending on the customers environment and workload requirements, they should choose the option that makes the most sense for their environment. As we can see cost, peformance and constraints all play a factor into the decesion. 
-
+We can see the various topologies above there are alternative approaches to hairpinning to the MSEE when it comes to ExpressRoute Intra and Inter region traffic flow. Each option has its own pluses and minuses. The customer should choose the best option that works for them in terms of cost, network performance and vnet subscription limits. 
 
 
