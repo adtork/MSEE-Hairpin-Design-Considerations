@@ -4,13 +4,17 @@
 In this scneario we are going to talking about hairpinning, also known as MSEE hairpinning whereas traffic leaving one VNET over expressroute egresses to the MSEE (Microsoft Provider Edge) before ingressing to another Vnet. This is the default behavior for intra-region (single express-route circuit) with multiple vnets and inter-regoin (multiple express-route circuits with multple Vnets. Although this design works today and has been around for many years, its discouraged to use this design due to increased latency of the traffic egressing the peering location pops hosting the MSEEs. Its important to note, in the near future this behavior will be changed, but its still current at the time of this article. We are going to discuss the various alternatives to this design behavior and the pluses and minuses of each design. Public documentation on Express-Route hairpinning can be found here: https://learn.microsoft.com/en-us/azure/expressroute/virtual-network-connectivity-guidance
 
 # Topology
+
+# Inter-Region
 ![image](https://user-images.githubusercontent.com/55964102/193679955-089ce726-ac9d-422b-92c8-7233fc473436.png)
 
+# Intra-Region
+![image](https://user-images.githubusercontent.com/55964102/193708856-64d9f123-c898-40b7-a093-8f066ec3eda7.png)
 
-Lets take the default behavior. If a VM in VnetA wants to talk to a VM in VnetB connected to a single circuit, or in this case two circuits using standard bow-tie, traffic leaves VnetA bypassing the source VnetA gateway, hits the MSEE at the pop location, ingresses to the MSEE via the other circuit, then finally ingressing through VnetB's gateway. We can see how this is not ideal having to hairpin all the way to the providers pop location hosting the MSEE. Its important to understand that MSEEs are not in Azure Datacenters but at peering co-location facilities offering connectivity! We are going to explore some alternatives topologes and way the pros and cons of each.
+Lets take the default behavior. If a VM in VnetA wants to talk to a VM in VnetB connected to a single circuit (Intra-Region) Traffic leaves VnetA bypassing the gateway, hits the MSEE and then ingress the gateway on VnetB. The behavior is the same on two circuits (Inter-Region) using standard bow-tie, traffic leaves VnetA bypassing the source VnetA gateway, hits the MSEE at the pop location, ingresses to the MSEE via the other circuit, then finally ingressing through VnetB's gateway. We can see how this is not ideal because either Intra or Inter region, traffic always hits the MSEE at the peering location before ingressing to the other Vnet adding latency.
 
 # Option 1: Vnet Peering
-The simpliest and best peforming option is to simply peer VnetA to VnetB. This approach is by far the easiest to implement and best in terms of performance. This also holds true via global VNET peering for inter-region. 
+The simpliest and best peforming option is to simply peer VnetA to VnetB. This approach is by far the easiest to implement and best in terms of performance. This also holds true via global VNET peering for inter-region if applicable. 
 
 ![image](https://user-images.githubusercontent.com/55964102/193679218-82c2394f-3564-4730-b982-f5b07ab99f1a.png)
 
@@ -29,7 +33,7 @@ Cons:
 https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/azure-subscription-service-limits#azure-resource-manager-virtual-networking-limits
 
 # Option 2: Connectivity or Transit Vnet hosting NVAs
-For this option we create a new spoke VnetC and peer that to each of our hub Vnets (VnetA and VnetB). In the spoke Vnet we deploy an NVA capable of doing the ipforwarding. For this scenario we could simply do Windows, Linux and enable the forwarding on the NIC and inside the GuestOS. The customer could also choose a third party NVA if they wanted inspection as well. From each Hub (VnetA and VnetB), we would create a UDR pointing to the NVA in VnetC as next hop in order to reach the destination VNET. We could also take a simmilar approach for inter-region. You could deploy NVAs in each hub (VnetA and VnetB) and then assuming each of those have spokes, the spokes could use those NVAs to transit to other Vnets. We could also connect this VNET (vnetC) to the existing circuit as well and still use the NVA to overide the gateway. With no gateway (diagram below), if you wanted to reach on-premise from VnetC, you would need to use "Allow Gateway Transit" and "Use Remote Gateway" on the VNET peering properties. 
+For this option we create a new spoke VnetC and peer that to each of our hub Vnets (VnetA and VnetB). In the spoke Vnet we deploy an NVA capable of doing the ipforwarding. For this scenario we could simply do Windows, Linux and enable the forwarding on the NIC and inside the GuestOS. The customer could also choose a third party NVA if they wanted inspection as well. From each Hub (VnetA and VnetB), we would create a UDR pointing to the NVA in VnetC as next hop in order to reach the destination VNET. We could also take a simmilar approach for inter-region. You could deploy NVAs in each hub (VnetA and VnetB) and then assuming each of those have spokes, the spokes could use those hub NVAs to transit to other Vnets on the second circuit. We could also connect this VNET (VnetC) to the existing circuit as well and still use UDRs and the NVA to overide the gateway. With no gateway (diagram below), if you wanted to reach on-premise from VnetC, you would need to use "Allow Gateway Transit" and "Use Remote Gateway" on the VNET peering properties. 
 
 ![image](https://user-images.githubusercontent.com/55964102/193691974-85ad8188-52c9-48f9-94f9-b879b4d94afe.png)
 
@@ -47,7 +51,7 @@ Cons:
 -Complexities of managing UDRs and Route Tables (Its posible to do a summary route to attract the traffic)
 
 # Option 3: Virtual Wan
-The main advatnage of virtual WAN is by default it offers any to any connectivity across hubs, spokes and branches via the default route table. The hub routers inside the vHub(s) facilitate this routing. It greatly simplies routing by taking away the need to manually create UDRs unless you need Vnet or branch isolation via custom routes. In terms of ExpressRoute, in order to avoid MSEE hairpain, customer would need to enable the hub-hub routing preference. At the time of this artcile if you have two circuits connected to two differet hubs, traffic will still hairpin to the MSEE to reach the other hub. In order to avoid this behavior, you would need to enable the gated preview of hub-hub routing, see here: https://learn.microsoft.com/en-us/azure/virtual-wan/whats-new#preview
+The main advatnage of virtual WAN is by default it offers any to any connectivity across hubs, spokes and branches via the default route table. The hub routers inside the vHub(s) facilitate this routing. It greatly simplies routing by taking away the need to manually create UDRs unless you need Vnet or branch isolation via custom routes. In terms of ExpressRoute, in order to avoid MSEE hairpain, customer would need to enable the hub-hub routing preference. At the time of this artcile if you have two circuits connected to two differet vhubs, traffic will still hairpin to the MSEE to reach the other vhub. In order to avoid this behavior, you would need to enable the gated preview of hub-hub routing, see here: https://learn.microsoft.com/en-us/azure/virtual-wan/whats-new#preview
 
 ![image](https://user-images.githubusercontent.com/55964102/193703052-df6c92fb-eeb3-40d5-ad90-9de852426ab4.png)
 
