@@ -1,14 +1,14 @@
 # ExpressRoute Hairpin Design Considerations
 
 # Intro
-In this topic we are going to talk about hair-pinning, also known as MSEE hair-pinning whereas traffic leaving one VNET over expressroute egresses to the MSEE (Microsoft Provider Edge) before ingressing to another Vnet. This is the default behavior for intra-region (single express-route circuit) with multiple vnets and inter-regoin (multiple express-route circuits with multple Vnets. Although this design works today and has been around for many years, its discouraged to use this design due to increased latency of the traffic egressing the peering location pops hosting the MSEEs. Its important to note, in the near future this behavior will be changed, but its still current at the time of this article. We are going to discuss the various alternatives to this design behavior and the pluses and minuses of each design. Public documentation on Express-Route hairpinning can be found here: https://learn.microsoft.com/en-us/azure/expressroute/virtual-network-connectivity-guidance
+In this topic we are going to talk about hair-pinning, also known as MSEE hair-pinning whereas traffic leaving one VNET over expressroute egresses to the MSEE (Microsoft Provider Edge) before ingressing to another destination Vnet. This is the default behavior for intra-region (single express-route circuit in one region) with multiple vnets and inter-regoin (multiple express-route circuits with multple Vnets in two regions). Although this design works today and has been around for many years, its discouraged to use this approach due to increased latency of the traffic hairpinning to the peering location pops hosting the MSEEs. Its important to note, in the near future this behavior will be changed, but its still current behavior at the time of this article. We are going to discuss the various alternatives to this design behavior and the pluses and minuses of each design. Public documentation on Express-Route hairpinning can be found here: https://learn.microsoft.com/en-us/azure/expressroute/virtual-network-connectivity-guidance
 
 # Topology
 
-# Inter-Region
+# Inter-Region (Two Regions)
 ![image](https://user-images.githubusercontent.com/55964102/193679955-089ce726-ac9d-422b-92c8-7233fc473436.png)
 
-# Intra-Region
+# Intra-Region (One Region)
 ![image](https://user-images.githubusercontent.com/55964102/193708856-64d9f123-c898-40b7-a093-8f066ec3eda7.png)
 
 Lets take the default behavior. If a VM in VnetA wants to talk to a VM in VnetB connected to a single circuit (Intra-Region) Traffic leaves VnetA bypassing the gateway, hits the MSEE and then ingress the gateway on VnetB. The behavior is the same on two circuits (Inter-Region) using standard bow-tie, traffic leaves VnetA bypassing the source VnetA gateway, hits the MSEE at the pop location, ingresses to the MSEE via the other circuit, then finally ingressing through VnetB's gateway. We can see how this is not ideal because either Intra or Inter region, traffic always hits the MSEE at the peering location before ingressing to the other Vnet adding latency.
