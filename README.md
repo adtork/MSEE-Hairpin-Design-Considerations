@@ -66,13 +66,14 @@ Cons:
 A Vnet can only be peered up to 500 times
 
 # Option 4: Virtual WAN
-The fouth option is to create a vWAN and vHubs which would provide native transit connectivity. This is also ideal for larger environments including inter-region which we cover next. In this scenario you would not need UDRs, nor NVAs. The spokes would be able to talk directly due to the routing instances inside each vHub. Sine its intra region, the vHubs would also direcly learn each others routes.
+The fouth option is to create a vWAN and vHubs which would provide native transit connectivity. This is also ideal for larger environments including inter-region which we cover next and the behavior would be the same. Spoke Vnet1 and Spoke Vnet2 would talk directly due to the router in the vHub. However, for Spoke Vnet1 to talk to Spoke Vnet3 on the remote hub, it would hairpin at the MSEE, same behavior for inter-region. In order to prevent this behavior on each vHub you would change Hub Routing preference from ExpressRoute (which is default) to AS-PATH. As we know in networking, shortest AS-PATH wins. The vHub ASN is 65520, so append that twice 65520-65520. That would be shorter then hairpinning and then ingressing at the GW. So, we are telling the platform if I have two routes to the same destination, prefer AS-PATH as opposed to ExpressRoute. After enabling AS-PATH for HRP, hub to hub traffic would stay on the WAN backbone. More info can be found here:
+https://learn.microsoft.com/en-us/azure/virtual-wan/about-virtual-hub-routing-preference
 
-![image](https://user-images.githubusercontent.com/55964102/195757964-6a68fc6d-fa59-439f-8cf6-7cb93b32fc6d.png)
+![image](https://user-images.githubusercontent.com/55964102/195915372-9d0675bc-1669-4d22-b8e6-5ac0265c7183.png)
 
 Pros:
 <br>
-Routing is done automatically via any-any connectivity intra region
+Routing is done automatically via any-any connectivity intra/Inter region
 <br>
 No MSEE hairpin or ExR GW on ingress
 <br>
@@ -83,6 +84,8 @@ Cons:
 Requires a redesign going from Trad. Hub+Spoke
 <br>
 vHub is a managed Vnet, user does not have full control
+<br>
+Enabling HRP AS-PATH here may affect other traffic patterns
 
 # Inter-Region
 
