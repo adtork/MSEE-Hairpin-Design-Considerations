@@ -89,6 +89,13 @@ Enabling HRP AS-PATH here may affect other traffic patterns
 
 # Inter-Region
 
+# Option 1: ExpressRoute Bow-Tie
+In this scenario for inter-region, each hub will advertise its address space and adjacent peered spokes to the remote express-route circuit since the spokes are using "Use Remote Gateway" and bow tie. Since the GWs are conneted to each MSEE, the remote circuit will learn the other circuits hub and peered spoke address spaces. This provides redudancy and full adjacency across each circuit. 
+
+![image](https://user-images.githubusercontent.com/55964102/195949394-6a6e3998-78cc-458f-a297-6d6e56c01b31.png)
+
+
+
 
 
 
