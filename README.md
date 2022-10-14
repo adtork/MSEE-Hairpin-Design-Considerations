@@ -90,9 +90,28 @@ Enabling HRP AS-PATH here may affect other traffic patterns
 # Inter-Region
 
 # Option 1: ExpressRoute Bow-Tie
-In this scenario for inter-region, each hub will advertise its address space and adjacent peered spokes to the remote express-route circuit since the spokes are using "Use Remote Gateway" and bow tie. Since the GWs are conneted to each MSEE, the remote circuit will learn the other circuits hub and peered spoke address spaces. This provides redudancy and full adjacency across each circuit. 
+In this scenario for inter-region, each hub Vnet will advertise its address space and adjacent peered spokes to the remote express-route circuit since the spokes are using "Use Remote Gateway" and bow tie. Since the GWs are conneted to each MSEE, the remote circuit will learn the other circuits hub and peered spoke address spaces. This provides redudancy and full adjacency across each circuit. 
 
-![image](https://user-images.githubusercontent.com/55964102/195949394-6a6e3998-78cc-458f-a297-6d6e56c01b31.png)
+![image](https://user-images.githubusercontent.com/55964102/195952342-0384fdf7-2894-4af6-8361-ace3dd346f84.png)
+
+Pros:
+<br>
+Traffic will ride the native MSFT Wan backbone and no transit fees
+<br>
+Configuration is simple, just add each ExR GW and connect to the remote circuit
+
+Cons:
+<br>
+Traffic is still hairpinning at the MSEE adding latency
+<br>
+Ingress traffic is still bound by ExRGW limits
+
+# Option 2: Using NVAs in each Hub
+For this solution, we simply create two NVAs in each Hub Vnet, same as intra-region, and we create UDRs on each spoke Vnet for each circuit pointing to the NVA as next hop for the destination VNET. We would also need to global peer both hub VNETs, so that they would learn each others address-space and have full reachability across both ciruits for hub+Spoke.
+
+![image](https://user-images.githubusercontent.com/55964102/195951466-a5f91bec-93cf-4e6a-9f98-ff539ab2cd65.png)
+
+
 
 
 
