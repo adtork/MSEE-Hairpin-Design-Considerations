@@ -9,7 +9,7 @@ In this topic we are going to talk about hair-pinning, also known as MSEE hair-p
 ![image](https://user-images.githubusercontent.com/55964102/194118074-255c79b9-5b85-40a2-a1c0-6ac747496537.png)
 
 # Inter-Region (Two Regions)
-![image](https://user-images.githubusercontent.com/55964102/195735578-f18fb70e-2377-4c10-8afe-3c9dfb02d9c0.png)
+![image](https://user-images.githubusercontent.com/55964102/195735758-5fd89852-c687-470f-82da-de868afe8aaf.png)
 
 In both designs above we are using standard hub and spoke model. The spoke vnets are peered to hub with "Allow GW Transit" and "Use Remote Gateways" enabled on the peerings in order to reach on prem and have BGP routes plummed to the spokes. In the following sections we will discuss options for spoke to spoke communication via intra region and spoke to spoke communuation via inter-region. We will also discuss hub to hub communciation in both deployment models.
 
