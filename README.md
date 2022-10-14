@@ -6,7 +6,7 @@ In this topic we are going to talk about hair-pinning, also known as MSEE hair-p
 # Topology
 
 # Intra-Region (One Region)
-![image](https://user-images.githubusercontent.com/55964102/194118074-255c79b9-5b85-40a2-a1c0-6ac747496537.png)
+![image](https://user-images.githubusercontent.com/55964102/195736520-332ac15c-9781-4517-9115-cb7e7d83a837.png)
 
 # Inter-Region (Two Regions)
 ![image](https://user-images.githubusercontent.com/55964102/195735758-5fd89852-c687-470f-82da-de868afe8aaf.png)
