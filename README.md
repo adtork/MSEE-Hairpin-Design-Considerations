@@ -29,7 +29,7 @@ Limited by ExR GW Bandwidth for Ingress
 # Option 2 : Deploy NVA in the Hub
 The second option is to deploy an NVA or Azure VM with IPforwarding enabled in the hub to steer the traffic to the spokes. We would then need to create UDRs on each Spoke Vnet1 and Spoke Vnet2 and apply to destination Vnet with NVA as next Hop in the Hub Vnet. 
 
-![image](https://user-images.githubusercontent.com/55964102/195953809-2ef4d8be-31d3-4e12-95ce-938f5624ed41.png)
+![image](https://user-images.githubusercontent.com/55964102/195955930-76d32b2e-26b2-4afe-b9ed-04894d346ac7.png)
 
 Pros:
 <br>
