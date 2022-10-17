@@ -109,7 +109,7 @@ Ingress traffic is still bound by ExRGW limits
 # Option 2: Using NVAs in each Hub
 For this solution, we simply create two NVAs in each Hub Vnet, same as intra-region, and we create UDRs on each spoke Vnet for each circuit pointing to the NVA as next hop for the destination VNET. We would also need to global peer both hub VNETs, so that they would learn each others address-space and have full reachability across both ciruits for hub+Spoke.
 
-![image](https://user-images.githubusercontent.com/55964102/195956843-4e4c9044-3efd-49a9-9b5f-8c1f1f70f163.png)
+![image](https://user-images.githubusercontent.com/55964102/196298801-08eeeae6-fe62-4398-aef4-64ac52715845.png)
 
 
 
