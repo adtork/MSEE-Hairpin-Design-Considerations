@@ -26,7 +26,7 @@ Address overlap can be an issue
 <br>
 Limited by ExR GW Bandwidth for Ingress
 
-# Option 2 : Deploy NVA in the Hub
+# Option 2 : Deploy NVA in the Hubs
 The second option is to deploy an NVA or Azure VM with IPforwarding enabled in the hub to steer the traffic to the spokes. We would then need to create UDRs on each Spoke Vnet1 and Spoke Vnet2 and apply to destination Vnet with NVA as next Hop in the Hub Vnet. 
 
 ![image](https://user-images.githubusercontent.com/55964102/195955930-76d32b2e-26b2-4afe-b9ed-04894d346ac7.png)
@@ -65,7 +65,7 @@ Cons:
 <br>
 A Vnet can only be peered up to 500 times
 
-# Option 4: Virutal WAN with HRP-ASPATH
+# Option 4: Virtual WAN with HRP-ASPATH
 The fouth option is to create a vWAN and vHubs which would provide native transit connectivity. This is also ideal for larger environments including inter-region which we cover next and the behavior would be the same. Spoke Vnet1 and Spoke Vnet2 would talk directly due to the router in the vHub. However, for Spoke Vnet1 to talk to Spoke Vnet3 on the remote hub, it would hairpin at the MSEE, same behavior for inter-region. In order to prevent this behavior on each vHub you would change Hub Routing preference from ExpressRoute (which is default) to AS-PATH. As we know in networking, shortest AS-PATH wins. The vHub ASN is 65520, so append that twice 65520-65520. That would be shorter then hairpinning and then ingressing at the GW. So, we are telling the platform if I have two routes to the same destination, prefer AS-PATH as opposed to ExpressRoute. After enabling AS-PATH for HRP, hub to hub traffic would stay on the WAN backbone. More info can be found here:
 https://learn.microsoft.com/en-us/azure/virtual-wan/about-virtual-hub-routing-preference
 
@@ -106,7 +106,7 @@ Traffic is still hairpinning at the MSEE adding latency
 <br>
 Ingress traffic is still bound by ExRGW limits
 
-# Option 2: Using NVAs in each Hub
+# Option 2: Using NVAs in the Hubs
 For this solution, we simply create two NVAs in each Hub Vnet, same as intra-region, and we create UDRs on each spoke Vnet for each circuit pointing to the NVA as next hop for the destination VNET. We would also need to global peer both hub VNETs, so that they would learn each others address-space and have full reachability across both ciruits for hub+Spoke.
 
 ![image](https://user-images.githubusercontent.com/55964102/196298801-08eeeae6-fe62-4398-aef4-64ac52715845.png)
@@ -129,7 +129,7 @@ Cons:
 Cost of global Vnet peering
 Limit of number of peered Vnets (500 per Vnet)
 
-# Option 4: Virutal WAN with HRP-ASPATH
+# Option 4: Virtual WAN with HRP-ASPATH
 Simmilar to our Intra-Region above with vWAN, use vWAN to enable transit connectivity between spokes on the hub. For Hub to Hub traffic to stay on the Azure WAN, use Hub Routing preference like above and choose AS-PATH so traffic is guranteed to stay on hub to hub via Azure WAN backbone and does not hairpin down to the MSEE. 
 
 ![image](https://user-images.githubusercontent.com/55964102/196304700-56a12bdf-6e00-4158-a78b-0fd00a3516a8.png)
@@ -150,7 +150,8 @@ vHub is a managed Vnet, user does not have full control
 <br>
 Enabling HRP AS-PATH here may affect other traffic patterns
 
-
+# Conclusion
+From this artcile we can see there are a couple of different approaches to avoid MSEE hairpin behavior for both Intra and Inter region designs. It should be mentioned that it's discouraged moving forward to use both "summary route" and "bow-tie" because that traffic still flows down to the MSEEs adding latency even though this design works. Moving forward customers should consider the other options that work best for their worloads and avoid the added latency and also potential bottlenecks of using the ExR GW for ingres traffic. The other options are good alternatives, but they also have their drawbacks. 
 
 
 
