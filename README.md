@@ -151,7 +151,7 @@ vHub is a managed Vnet, user does not have full control
 Enabling HRP AS-PATH here may affect other traffic patterns
 
 # Conclusion
-From this artcile we can see there are a couple of different approaches to avoid MSEE hairpin behavior for both Intra and Inter region designs. It should be mentioned that it's discouraged moving forward to use both "summary route" and "bow-tie" because that traffic still flows down to the MSEEs adding latency even though this design works. Moving forward customers should consider the other options that work best for their worloads and avoid the added latency and also potential bottlenecks of using the ExR GW for ingres traffic. The other options are good alternatives, but they also have their drawbacks. 
+From this article we can see there are a couple of different approaches to avoid MSEE hairpin behavior for both Intra and Inter region designs. It should be mentioned that it's discouraged moving forward to use both "summary route" and "bow-tie" because that traffic still flows down to the MSEEs adding latency even though this design works. Moving forward customers should consider the other options that work best for their worloads and avoid the added latency and also potential bottlenecks of using the ExR GW for ingres traffic. The other options are good alternatives, but they also have their drawbacks. 
 
 
 
