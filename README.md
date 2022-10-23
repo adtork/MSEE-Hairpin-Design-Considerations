@@ -30,7 +30,7 @@ Vnet peering costs
 # Option 2: Vnet Peering
 The second option and really easiest to deploy is to just simply peer all the spoke Vnets directly. Like above with Option 1, inter region spokes would require global Vnet peering to communicate.
 
-![image](https://user-images.githubusercontent.com/55964102/197367666-865d041b-06b8-4d56-b746-e1c6f2cab206.png)
+![image](https://user-images.githubusercontent.com/55964102/197368460-279f97af-e60e-4aba-92d8-3ef09af87ea8.png)
 
 Pros:
 
@@ -46,6 +46,13 @@ Cons:
 
 Subjet to Vnet peering costs
 Limit to the number of Vnets that can be peered (500)
+https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/azure-subscription-service-limits#azure-resource-manager-virtual-networking-limits
+
+# Option 3: Azure Virtual WAN with HRP(AS-PATH)
+The third and final option is to deploy Azure virtual WAN.  The benefit of this approach is vWAN natively provides full mesh connectivity between the vHub and spoke Vnets. Once the spokes are connected to the vHub, there is no need for NVAs, as the router in the vHub provides full mesh connectivity. This same connectivity also applies with two vHubs inter-region. Spokes across regions will be able to communicate directly. There is one additonal thing that is needed for traffic **not** to hairpin using vWAN cross region, and that is to enable Hub Routing Preference (HRP) with AS-PATH. That way, when traffic needs to communicate across regions and hubs, traffic will take hub-to-hub as opposed to hairpinning at the MSEE which is default behavior **without** HRP set to AS-PATH. Since shortest AS-PATH wins, that tells Azure fabric to route the packets hub to hub. More info on HRP can be found here: https://learn.microsoft.com/en-us/azure/virtual-wan/about-virtual-hub-routing-preference
+
+![image](https://user-images.githubusercontent.com/55964102/197368188-699c11c8-dcfb-415c-9266-db01b655987e.png)
+
 
 
 
