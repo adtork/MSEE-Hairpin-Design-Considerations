@@ -8,7 +8,7 @@ Its important to note, in the near future this behavior will be changed and Azur
 # Option 1: Using an NVA inside Hub Vnets
 The first option to get around traffic hairpinning down to the MSEE pops is to simply put a NVA or VM with ipforwarding in the hub Vnets. On each spoke Vnet, you would then need to create a UDR pointing to the remote spoke Vnet prefix with next hop hub NVA. Simmilary for inter-region, you would take the same approach but would also need to add global vnet peering between the hubs for them to commmunicate cross region. If you wanted to reach the remote spokes, you would need to either peer the spokes directly since VNET peering is not transitive, or you could use a VM or NVA in the hub Vnet as a jumpbox to reach the remote hub Vnet and then up to the remote spokes.
 
-![image](https://user-images.githubusercontent.com/55964102/197367249-41503897-a47b-4d70-a47b-f99ee0768a95.png)
+![image](https://user-images.githubusercontent.com/55964102/197368592-2ee716d4-80ff-4d7f-bea2-51a7157b7af8.png)
 
 
 Pros:
