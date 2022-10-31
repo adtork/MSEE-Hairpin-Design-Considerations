@@ -28,7 +28,7 @@ Responsibility of managing the NVA
 Vnet peering costs
 
 # Option 2: Vnet Peering
-The second option and really the easiest to deploy is to simply peer all the spoke Vnets directly. Like above with Option 1, inter region spokes would require global Vnet peering to communicate.
+The second option and really the easiest to deploy is to simply peer all the spoke Vnets directly that require connectivity. Like above with Option 1, inter region spokes would require global Vnet peering to communicate.
 
 ![image](https://user-images.githubusercontent.com/55964102/197368460-279f97af-e60e-4aba-92d8-3ef09af87ea8.png)
 
