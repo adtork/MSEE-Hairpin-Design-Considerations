@@ -28,9 +28,9 @@ Responsibility of managing the NVA
 Vnet peering costs
 
 # Option 2: Vnet Peering
-The second option and really the easiest to deploy is to simply peer all the spoke Vnets directly that require connectivity. Like above with Option 1, inter region spokes would require global Vnet peering to communicate.
+The second option and really the easiest to deploy is to simply peer all the spoke Vnets directly that require connectivity. Like above with Option 1, inter region spokes would require global Vnet peering to communicate. Another recently introduced option to build full Vnet peering meshes is to use Azure Virtual Network Manager (AVNM). You can build intra region meshes and global peering meshes. The goal of AVNM is to manage resources at scale and simplify management overhead. Currently this is in public preview at the time of this article. More information can be found here: https://learn.microsoft.com/en-us/azure/virtual-network-manager/overview 
 
-![image](https://user-images.githubusercontent.com/55964102/197368460-279f97af-e60e-4aba-92d8-3ef09af87ea8.png)
+![image](https://user-images.githubusercontent.com/55964102/199111545-925126d5-56a2-4793-847f-3f485bc75f7e.png)
 
 **Pros:**
 
