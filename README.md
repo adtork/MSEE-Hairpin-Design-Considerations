@@ -50,7 +50,7 @@ Limit to the number of Vnets that can be peered (500)
 https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/azure-subscription-service-limits#azure-resource-manager-virtual-networking-limits
 
 # Option 3: Azure Virtual WAN with HRP(AS-PATH)
-The third and final option is to deploy Azure virtual WAN.  The benefit of this approach is vWAN natively provides full mesh connectivity between the vHub and spoke Vnets. Once the spokes are connected to the vHub, there is no need for NVAs, as the router in the vHub provides full connectivity. This same connectivity also applies with two vHubs inter-region. Spokes across regions will be able to communicate directly. There is one additonal thing that is needed for traffic **not** to hairpin using vWAN cross region, and that is to enable **Hub Routing Preference (HRP) with AS-PATH**. That way, when traffic needs to communicate across regions and vhubs, traffic will take hub-to-hub as opposed to hairpinning at the MSEE which is default behavior **without** HRP set to AS-PATH. Since shortest AS-PATH wins, that tells Azure fabric to route the packets hub to hub. More info on HRP can be found here: https://learn.microsoft.com/en-us/azure/virtual-wan/about-virtual-hub-routing-preference
+The third and final option is to deploy Azure virtual WAN. The benefits to using vWAN is that it simplifies routing overall and provides native transit connectivity for everything except ExR to ExR, which would require global reach. For intra region traffic, spokes simply take the routers in the vHub to communciate directly using default route table. Spoke traffic can also be steered using custom routes, but that is beyond the scope of this article. For inter-region traffic, (hub to hub), in order to avoid the MSEE hairpin, you would need to set the hub routing preference (HRP) to AS-PATH. Public docs still show this as a seperate feature, but Hub to Hub using ExR has been rolled into Hub Routing Preference. In a normal scneario using bow-tie as shown below, traffic still hairpins at the MSEE for inter-region flows. We need to change HRP from **Expressroute which is default**, to **HRP AS-PATH**. Shortest AS-PATH wins, so we are telling fabric to prefer the shorter route for inter region flows. Information on Hub Routing Preference can be found here: https://learn.microsoft.com/en-us/azure/virtual-wan/about-virtual-hub-routing-preference
 
 ![image](https://user-images.githubusercontent.com/55964102/199113851-c4693072-5e49-4955-b86c-c7dcce5220b0.png)
 
@@ -71,8 +71,7 @@ HRP may affect other routes in the environment
 Less visability into vHubs since they are MSFT managed Vnets
 
 # Conclusion
-The above design alternatives are additonal ways to direct traffic for intra and inter region designs with ExpressRoute. The old approaches of doing a "summary route" for intra region and "bow-tie" for inter-region should be discourgaged because traffic still hairpins at the MSEE in both scenarios and at some point error codes will likely be thrown with trying this design. Given the options above, customers should choose the best one based on their environment, cost needs, and future expansion goals. 
-
+The above are design alternatives are additonal ways to direct traffic for intra and inter region designs using ExpressRoute. The old approaches of doing a "summary route" for intra region and "bow-tie" for inter-region should be discourgaged because traffic still hairpins at the MSEE which adds latency and is discouraged moving forward. Down the road, Azure will likely prevent users from using this approach if it detects this being configured.
 
 
 
