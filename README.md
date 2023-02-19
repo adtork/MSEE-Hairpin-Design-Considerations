@@ -64,7 +64,7 @@ No MSEE hairpin as long as HRP is set to AS-PATH on the vHubs
 
 **Cons:**
 
-Would require a residgn if traditonal Hub+Spoke already deployed
+Would require a redesign if traditonal Hub+Spoke already deployed
 
 HRP may affect other routes in the environment
 
