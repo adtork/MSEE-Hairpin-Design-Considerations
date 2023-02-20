@@ -12,19 +12,19 @@ The first option to get around traffic hairpinning down to the MSEE pops is to s
 
 **Pros:**
 
-Traffic no longer hairpins at the MSEE pop locations
+ °Traffic no longer hairpins at the MSEE pop locations
 
-Traffic no longer ingresses to the GWs on remote Vnets
+ °Traffic no longer ingresses threw the GWs
 
-Full visability into NVA or VM since its customer managed
+ °Full NVA control and management
 
 **Cons:**
 
-Cost of running the NVA
+ °Cost of running the NVA
 
-Responsibility of managing the NVA
+ °Responsibility of managing the NVA
 
-Vnet peering costs
+ °UDR Management 
 
 # Option 2: Vnet Peering
 The second option and really the easiest to deploy is to simply peer all the spoke Vnets directly that require connectivity. Like above with Option 1, inter region spokes would require global Vnet peering to communicate. Another recently introduced option to build full Vnet peering meshes is to use Azure Virtual Network Manager (AVNM). You can build intra region meshes and global peering meshes. The goal of AVNM is to manage resources at scale and simplify management overhead. Currently this is in public preview at the time of this article. More information can be found here: https://learn.microsoft.com/en-us/azure/virtual-network-manager/overview 
@@ -33,17 +33,17 @@ The second option and really the easiest to deploy is to simply peer all the spo
 
 **Pros:**
 
-Easiest to setup and deploy
+ °Easiest to setup/deploy
 
-No administration cost
+ °No administration cost
 
-Routing is done automatically
+ °Routing is seamless
 
-Lowest possible latency on Azure WAN since GWs and MSEE bypassed
+ °Lowest possible latency on as no GW or MSEE in path
 
 **Cons:**
 
-Subjet to Vnet peering costs
+Vnet peering limits
 
 Limit to the number of Vnets that can be peered (500)
 https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/azure-subscription-service-limits#azure-resource-manager-virtual-networking-limits
@@ -56,19 +56,19 @@ The third and final option is to deploy Azure virtual WAN. The benefits to using
 
 **Pros:**
 
-Routing is taking care of automatically via vhub routers and default route table
+ °Routing is taking care of automatically via vhub routers and default route table
 
-No NVAs or UDRs to manage
+ °No NVAs or UDRs to manage
 
-No MSEE hairpin as long as HRP is set to AS-PATH on the vHubs
+ °No MSEE hairpin as long as HRP is set to AS-PATH on the vHubs
 
 **Cons:**
 
-Would require a redesign if traditonal Hub+Spoke already deployed
+ °Would require a redesign if traditonal Hub+Spoke already deployed
 
-HRP may affect other routes in the environment
+ °HRP may affect other routes in the environment
 
-Less visability into vHubs since they are MSFT managed Vnets
+ °Less visability into vHubs since they are MSFT managed Vnets
 
 # Conclusion
 The above are design alternatives are additonal ways to direct traffic for intra and inter region designs using ExpressRoute. The old approaches of doing a "summary route" for intra region and "bow-tie" for inter-region should be discourgaged because traffic still hairpins at the MSEE which adds latency and is discouraged moving forward. Down the road, Azure will likely prevent users from using this approach if it detects this being configured.
