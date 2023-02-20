@@ -71,7 +71,7 @@ The third and final option is to deploy Azure virtual WAN. The benefits to using
  °Less visability into vHubs since they are MSFT managed Vnets
 
 # Conclusion
-The above are design alternatives are additonal ways to direct traffic for intra and inter region designs using ExpressRoute. The old approaches of doing a "summary route" for intra region and "bow-tie" for inter-region should be discourgaged because traffic still hairpins at the MSEE which adds latency and is discouraged moving forward. Down the road, Azure will likely prevent users from using this approach if it detects this being configured.
+The above are design alternatives to direct traffic for intra and inter region designs using ExpressRoute. The old approaches of doing a "summary route" for intra region and "bow-tie" for inter-region should be discourgaged because traffic still hairpins at the MSEE which adds latency and is discouraged moving forward. 
 
 
 
