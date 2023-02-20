@@ -8,8 +8,7 @@ Its important to note, in the near future this behavior will be changed and Azur
 # Option 1: Using an NVA inside Hub Vnets
 The first option to get around traffic hairpinning down to the MSEE pops is to simply put a NVA or VM with ipforwarding in the hub Vnets. On each spoke Vnet, you would then need to create a UDR pointing to the remote spoke Vnet prefix with next hop hub NVA. Doing this traffic would be routed to the NVAs for spoke to spoke communication instead of going down to the MSEEs. Simmilary for inter-region, you would take the same approach but would also need to add global vnet peer the hubs for them to commmunicate across regions. If you wanted to reach the remote spokes, you would need to either peer the spokes directly since VNET peering is not transitive, or you could use the VM or NVA in the hub Vnet as a jumpbox to reach the remote hub Vnet and then up to the remote spokes from there.
 
-![image](https://user-images.githubusercontent.com/55964102/197368592-2ee716d4-80ff-4d7f-bea2-51a7157b7af8.png)
-
+![image](https://user-images.githubusercontent.com/55964102/220209806-21254dbe-987f-4237-a33e-abb32f4fb66b.png)
 
 **Pros:**
 
@@ -30,7 +29,7 @@ Vnet peering costs
 # Option 2: Vnet Peering
 The second option and really the easiest to deploy is to simply peer all the spoke Vnets directly that require connectivity. Like above with Option 1, inter region spokes would require global Vnet peering to communicate. Another recently introduced option to build full Vnet peering meshes is to use Azure Virtual Network Manager (AVNM). You can build intra region meshes and global peering meshes. The goal of AVNM is to manage resources at scale and simplify management overhead. Currently this is in public preview at the time of this article. More information can be found here: https://learn.microsoft.com/en-us/azure/virtual-network-manager/overview 
 
-![image](https://user-images.githubusercontent.com/55964102/199111545-925126d5-56a2-4793-847f-3f485bc75f7e.png)
+![image](https://user-images.githubusercontent.com/55964102/220211126-6a29401e-5121-4ba8-a862-cfb1eaf895b5.png)
 
 **Pros:**
 
@@ -52,7 +51,8 @@ https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/azure-
 # Option 3: Azure Virtual WAN with HRP(AS-PATH)
 The third and final option is to deploy Azure virtual WAN. The benefits to using vWAN is that it simplifies routing overall and provides native transit connectivity for everything except ExR to ExR, which would require global reach. For intra region traffic, spokes simply take the routers in the vHub to communciate directly using default route table. Spoke traffic can also be steered using custom routes, but that is beyond the scope of this article. For inter-region traffic, (hub to hub), in order to avoid the MSEE hairpin, you would need to set the hub routing preference (HRP) to AS-PATH. Public docs still show this as a seperate feature, but Hub to Hub using ExR has been rolled into Hub Routing Preference. In a normal scneario using bow-tie as shown below, traffic still hairpins at the MSEE for inter-region flows. We need to change HRP from **Expressroute which is default**, to **HRP AS-PATH**. Shortest AS-PATH wins, so we are telling fabric to prefer the shorter route for inter region flows. Information on Hub Routing Preference can be found here: https://learn.microsoft.com/en-us/azure/virtual-wan/about-virtual-hub-routing-preference
 
-![image](https://user-images.githubusercontent.com/55964102/199113851-c4693072-5e49-4955-b86c-c7dcce5220b0.png)
+![image](https://user-images.githubusercontent.com/55964102/220211769-2de461ca-5ec6-4bfd-97c7-125e54c541fa.png)
+
 
 **Pros:**
 
