@@ -39,11 +39,9 @@ The second option and really the easiest to deploy is to simply peer all the spo
 
  °Routing is seamless
 
- °Lowest possible latency on as no GW or MSEE in path
+ °Lowest possible latency on datapath
 
 **Cons:**
-
-Vnet peering limits
 
 Limit to the number of Vnets that can be peered (500)
 https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/azure-subscription-service-limits#azure-resource-manager-virtual-networking-limits
