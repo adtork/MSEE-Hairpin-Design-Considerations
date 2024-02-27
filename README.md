@@ -6,7 +6,7 @@ In this topic we are going to talk about hair-pinning, also known as MSEE hair-p
 Its important to note, in the near future this behavior will be changed and Azure control plane will likely throw an error if you try the old design apporaches per above. We are going to discuss the various alternatives to avoid MSEE hairpinning with ExpressRoute. Public documentation on Express-Route hairpinning can be found here: https://learn.microsoft.com/en-us/azure/expressroute/virtual-network-connectivity-guidance
 
 # Option 1: Using an NVA inside Hub Vnets
-The first option to get around traffic hairpinning down to the MSEE pops is to simply put a NVA or VM with ipforwarding in the hub Vnets. On each spoke Vnet, you would then need to create a UDR pointing to the remote spoke Vnet prefix with next hop hub NVA. Doing this traffic would be routed to the NVAs for spoke to spoke communication instead of going down to the MSEEs. Simmilary for inter-region, you would take the same approach but would also need to add global vnet peer the hubs for them to commmunicate across regions. If you wanted to reach the remote spokes, you would need to either peer the spokes directly since VNET peering is not transitive, or you could use the VM or NVA in the hub Vnet as a jumpbox to reach the remote hub Vnet and then up to the remote spokes from there.
+The first option to get around traffic hairpinning down to the MSEE pops is to simply put a NVA or VM with ipforwarding in the hub Vnets. On each spoke Vnet, you would then need to create a UDR pointing to the remote spoke Vnet prefix, or 0.0.0.0/0 with next hop hub NVA. Doing this, traffic would be routed to the NVAs for spoke to spoke communication instead of going down to the MSEE POP. Simmilary for inter-region, you would take the same approach but would also need to global vnet peer the hubs for them to commmunicate cross region. You would then point to the remote FW as next hop and remote destination spokes. Its important to note, you would need to add a UDR for every spoke you wish to connect to, unless you do a summary route composing a supernet of all the spoke vnets.
 
 ![image](https://user-images.githubusercontent.com/55964102/220209806-21254dbe-987f-4237-a33e-abb32f4fb66b.png)
 
@@ -14,15 +14,15 @@ The first option to get around traffic hairpinning down to the MSEE pops is to s
 
  °Traffic no longer hairpins at the MSEE pop locations
 
- °Traffic no longer ingresses threw the GWs
+ °Traffic no longer ingresses threw remote gws
 
  °Full NVA control and management
 
 **Cons:**
 
- °Cost of running the NVA
+ °Cost of running the NVA/additonal VMs
 
- °Responsibility of managing the NVA
+ °Responsibility of managing the NVA/VMs
 
  °UDR Management 
 
@@ -47,7 +47,7 @@ Limit to the number of Vnets that can be peered (500)
 https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/azure-subscription-service-limits#azure-resource-manager-virtual-networking-limits
 
 # Option 3: Azure Virtual WAN with HRP(AS-PATH)
-The third and final option is to deploy Azure virtual WAN. The benefits to using vWAN is that it simplifies routing overall and provides native transit connectivity for everything except ExR to ExR, which would require global reach. For intra region traffic, spokes simply take the routers in the vHub to communciate directly using default route table. Spoke traffic can also be steered using custom routes, but that is beyond the scope of this article. For inter-region traffic, (hub to hub), in order to avoid the MSEE hairpin, you would need to set the hub routing preference (HRP) to AS-PATH if using ExR bow-tie. Public docs still show this as a seperate feature, but Hub to Hub using ExR has been rolled into Hub Routing Preference. In a normal scneario using bow-tie as shown below, traffic still hairpins at the MSEE for inter-region flows. We need to change HRP from **Expressroute which is default**, to **HRP AS-PATH**. Shortest AS-PATH wins, so we are telling fabric to prefer the shorter route for inter region flows. Information on Hub Routing Preference can be found here: https://learn.microsoft.com/en-us/azure/virtual-wan/about-virtual-hub-routing-preference
+The third and final option is to deploy Azure virtual WAN. The benefits to using vWAN is that it simplifies routing overall and provides native transit connectivity for everything except ExR to ExR, which would require global reach. For intra region traffic, spokes simply take the hub routers in to communciate directly using default route table. Spoke traffic can also be steered using custom routes, but that is beyond the scope of this article. For inter-region traffic, (vhub to vhub), in order to avoid the MSEE hairpin, you would need to set the hub routing preference (HRP) to AS-PATH if using ExR bow-tie. Its important to note, if you're not using bow-tie and each vhub has a circuit, it will take hub to hub automatically. You only need to set HRP when doing the bow-tie! Public docs still show this as a seperate feature, but Hub to Hub using ExR has been rolled into Hub Routing Preference. In a normal scneario using bow-tie as shown below, traffic still hairpins at the MSEE for inter-region flows. We need to change HRP from **Expressroute which is default**, to **HRP AS-PATH**. since shortest AS-PATH wins, so we are telling fabric to prefer the shorter route for inter region flows. Information on Hub Routing Preference can be found here: https://learn.microsoft.com/en-us/azure/virtual-wan/about-virtual-hub-routing-preference
 
 ![image](https://user-images.githubusercontent.com/55964102/220211769-2de461ca-5ec6-4bfd-97c7-125e54c541fa.png)
 
@@ -64,7 +64,7 @@ The third and final option is to deploy Azure virtual WAN. The benefits to using
 
  °Would require a redesign if traditonal Hub+Spoke already deployed
 
- °HRP may affect other routes in the environment
+ °HRP may affect other routes in the environment, for example VPN and SDWAN tunnels
 
  °Less visability into vHubs since they are MSFT managed Vnets
 
