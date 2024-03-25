@@ -29,7 +29,7 @@ The first option to get around traffic hairpinning down to the MSEE pops is to s
 # Option 2: Vnet Peering
 The second option and really the easiest to deploy is to simply peer all the spoke Vnets directly that require connectivity. Like above with Option 1, inter region spokes would require global Vnet peering to communicate. Another recently introduced option to build full Vnet peering meshes is to use Azure Virtual Network Manager (AVNM). You can build intra region meshes and global peering meshes. The goal of AVNM is to manage resources at scale and simplify management overhead. Currently this is in public preview at the time of this article. More information can be found here: https://learn.microsoft.com/en-us/azure/virtual-network-manager/overview 
 
-![image](https://user-images.githubusercontent.com/55964102/220211126-6a29401e-5121-4ba8-a862-cfb1eaf895b5.png)
+![image](https://github.com/adtork/MSEE-Hairpin-Design-Considerations/assets/55964102/24982b06-5971-4a2b-b1c3-d099b53b3dcc)
 
 **Pros:**
 
