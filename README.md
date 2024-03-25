@@ -9,7 +9,6 @@ The first option to get around traffic hairpinning down to the MSEE pops is to s
 
 ![image](https://github.com/adtork/MSEE-Hairpin-Design-Considerations/assets/55964102/76215072-59e2-41e6-ae3c-5441613c245c)
 
-
 **Pros:**
 
  °Traffic no longer hairpins to MSEE pop locations
@@ -49,7 +48,7 @@ https://learn.microsoft.com/en-us/azure/azure-resource-manager/management/azure-
 # Option 3: Azure Virtual WAN with HRP(AS-PATH)
 The third and final option is to deploy Azure virtual WAN. The benefits to using vWAN is that it simplifies routing overall and provides native transit connectivity for everything except ExR to ExR, which would require global reach. For intra region traffic, spokes simply take the hub routers to communciate directly using default route table. Spoke traffic can also be steered using custom routes, but that is beyond the scope of this article. For inter-region traffic, (vhub to vhub), in order to avoid the MSEE hairpin, you would need to set the hub routing preference (HRP) to AS-PATH if using ExR bow-tie. Its important to note, if you're not using bow-tie and each vhub has a unique circuit, it will take hub to hub automatically. You only need to set HRP when doing the bow-tie!. In a normal scneario using bow-tie as shown below, traffic still hairpins at the MSEE for inter-region flows. We need to change HRP from **Expressroute which is default**, to **HRP AS-PATH**. Information on Hub Routing Preference can be found here: https://learn.microsoft.com/en-us/azure/virtual-wan/about-virtual-hub-routing-preference
 
-![image](https://user-images.githubusercontent.com/55964102/220211769-2de461ca-5ec6-4bfd-97c7-125e54c541fa.png)
+![image](https://github.com/adtork/MSEE-Hairpin-Design-Considerations/assets/55964102/763535cc-e4e0-4ecd-bab4-675464483acd)
 
 
 **Pros:**
