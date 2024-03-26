@@ -11,19 +11,19 @@ The first option to get around traffic hairpinning down to the MSEE pops is to s
 
 **Pros:**
 
- °Traffic no longer hairpins to MSEE pop locations
+ - Traffic no longer hairpins to MSEE pop locations
 
- °Traffic no longer ingresses threw remote gws, less load
+ - Traffic no longer ingresses threw remote gws, less load
 
- °Control over NVAs
+ - Control over NVAs
 
 **Cons:**
 
- °Cost of running the NVA/additonal VMs
+ - Cost of running the NVA/additonal VMs
 
- °Responsibility of managing the NVA/VMs
+ - Responsibility of managing the NVA/VMs
 
- °UDR Management 
+ - UDR Management 
 
 # Option 2: Vnet Peering
 The second option and really the easiest to deploy is to simply peer all the spoke Vnets directly that require connectivity. Like above with Option 1, inter region spokes would require global Vnet peering to communicate. Another recently introduced option to build full Vnet peering meshes is to use Azure Virtual Network Manager (AVNM). You can build intra region meshes and global peering meshes. The goal of AVNM is to manage resources at scale and simplify management overhead. Currently this is in public preview at the time of this article. More information can be found here: https://learn.microsoft.com/en-us/azure/virtual-network-manager/overview 
@@ -32,13 +32,13 @@ The second option and really the easiest to deploy is to simply peer all the spo
 
 **Pros:**
 
- °Easiest to setup/deploy
+ - Easiest to setup/deploy
 
- °No administration cost
+ - No administration cost
 
- °No UDR Management
+ - No UDR Management
 
- °Lowest latency, no VM chokepoint
+ - Lowest latency, no VM chokepoint
 
 **Cons:**
 
@@ -53,19 +53,19 @@ The third and final option is to deploy Azure virtual WAN. The benefits to using
 
 **Pros:**
 
- °Routing is taking care of automatically via vhub routers and default route table
+ - Routing is taking care of automatically via vhub routers and default route table
 
- °No NVAs or UDRs to manage
+ - No NVAs or UDRs to manage
 
- °No MSEE hairpin as long as HRP is set to AS-PATH on the vHubs
+ - No MSEE hairpin as long as HRP is set to AS-PATH on the vHubs
 
 **Cons:**
 
- °Would require a redesign if traditonal Hub+Spoke already deployed
+ - Would require a redesign if traditonal Hub+Spoke already deployed
 
- °HRP may affect other routes in the environment, for example VPN and SDWAN tunnels
+ - HRP may affect other routes in the environment, for example VPN and SDWAN tunnels
 
- °Less visability into vHubs since they are MSFT managed Vnets
+ - Less visability into vHubs since they are MSFT managed Vnets
 
 # Conclusion
 The above are design alternatives to direct traffic for intra and inter region designs using ExpressRoute. The old approaches of doing a "summary route" for intra region and "bow-tie" for inter-region should be discourgaged because traffic still hairpins at the MSEE which adds latency and is discouraged moving forward. 
