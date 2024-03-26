@@ -12,17 +12,13 @@ The first option to get around traffic hairpinning down to the MSEE pops is to s
 **Pros:**
 
  - Traffic no longer hairpins to MSEE pop locations
-
  - Traffic no longer ingresses threw remote gws, less load
-
  - Control over NVAs
 
 **Cons:**
 
  - Cost of running the NVA/additonal VMs
-
  - Responsibility of managing the NVA/VMs
-
  - UDR Management 
 
 # Option 2: Vnet Peering
@@ -33,11 +29,8 @@ The second option and really the easiest to deploy is to simply peer all the spo
 **Pros:**
 
  - Easiest to setup/deploy
-
  - No administration cost
-
  - No UDR Management
-
  - Lowest latency, no VM chokepoint
 
 **Cons:**
@@ -54,17 +47,13 @@ The third and final option is to deploy Azure virtual WAN. The benefits to using
 **Pros:**
 
  - Routing is taking care of automatically via vhub routers and default route table
-
  - No NVAs or UDRs to manage
-
  - No MSEE hairpin as long as HRP is set to AS-PATH on the vHubs
 
 **Cons:**
 
  - Would require a redesign if traditonal Hub+Spoke already deployed
-
  - HRP may affect other routes in the environment, for example VPN and SDWAN tunnels
-
  - Less visability into vHubs since they are MSFT managed Vnets
 
 # Conclusion
