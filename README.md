@@ -65,7 +65,7 @@ Regarding inter-region traffic (vhub to vhub), to bypass the MSEE hairpin, it is
  - Less visability into vHubs since they are MSFT managed Vnets
 
 # Conclusion
-The above are design alternatives to direct traffic for intra and inter region designs using ExpressRoute. The old approaches of doing a "summary route" for intra region and "bow-tie" for inter-region should be discourgaged because traffic still hairpins at the MSEE which adds latency and is discouraged moving forward. 
+The aforementioned outlines various design alternatives for directing traffic in both intra and inter-region designs utilizing ExpressRoute. Traditional methodologies such as implementing a 'summary route' for intra-region configurations and a 'bow-tie' for inter-region configurations should be discouraged. These approaches result in traffic continuing to hairpin at the MSEE, and increase load on the express-route gateway. As a result, these methods are not recommended for future deployments, and are discouraged moving forward! 
 
 
 
