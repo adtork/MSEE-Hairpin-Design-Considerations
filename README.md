@@ -6,7 +6,7 @@ In this topic we are going to talk about hair-pinning, also known as MSEE hair-p
 # Option 1: Using an NVA inside Hub Vnets
 The first option to get around traffic hairpinning down to the MSEE pops is to simply put a NVA or VM with ipforwarding in the hub Vnets. On each spoke Vnet, you would then need to create a UDR pointing to the remote spoke Vnet prefix, or default route (0.0.0.0/0) with next hop hub NVA. Doing this, traffic would be routed to the NVAs for spoke to spoke communication instead of going down to the MSEE POP location. Simmilary for inter-region flows, you would take the same approach but would also need to global vnet peer the hubs for them to commmunicate cross region. You would then point to the remote hub firewall with destination remote spokes. Its important to note, you would need to add a UDR for every spoke you wish to connect to, unless you do a summary route composing a supernet of all the spoke vnets. Another approach to using NVAs in hubs is to BGP peer them using ARS. This takes away the need to manage UDRs. For inter-region topology using ARS, see article: [Multi region ARS Design](https://learn.microsoft.com/en-us/azure/route-server/multiregion#topology).
 
-![image](https://github.com/adtork/MSEE-Hairpin-Design-Considerations/assets/55964102/7fa9cab5-5acf-47ef-9934-0af303afca1b)
+![image](https://github.com/adtork/MSEE-Hairpin-Design-Considerations/assets/55964102/20cbbdf6-6dcc-4302-a31a-076de029f3c9)
 
 **Pros:**
  - Traffic no longer hairpins to MSEE pop locations
