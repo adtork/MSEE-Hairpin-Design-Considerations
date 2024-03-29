@@ -14,7 +14,7 @@ The initial strategy for circumventing traffic hairpinning to the MSEE points of
 
 For inter-region flows, the same approach is applicable, with the addition of global Vnet peering for the hubs to facilitate cross-region communication. The next step would be to point to the remote hub NVA with the destination being the remote spokes. It is critical to note that for every spoke you wish to connect to, a UDR would need to be added, unless a summary route is used that composes a supernet of all the remote spoke vnets.
 
-An alternative strategy for utilizing NVAs in hubs is to establish BGP peering using Azure Route Server (ARS), which eliminates the need for managing UDRs. For a detailed understanding of inter-region topology using ARS, refer to the article titled 'Multi-region ARS Design'[Multi region ARS Design](https://learn.microsoft.com/en-us/azure/route-server/multiregion#topology).
+An alternative strategy for utilizing NVAs in hubs is to establish BGP peering using Azure Route Server (ARS), which eliminates the need for managing UDRs. For a detailed understanding of inter-region topology using ARS, refer to the article titled [Multi region ARS Design](https://learn.microsoft.com/en-us/azure/route-server/multiregion#topology).
 
 ![image](https://github.com/adtork/MSEE-Hairpin-Design-Considerations/assets/55964102/20cbbdf6-6dcc-4302-a31a-076de029f3c9)
 
@@ -29,7 +29,7 @@ An alternative strategy for utilizing NVAs in hubs is to establish BGP peering u
  - UDR Management overheard
 
 # Option 2: Vnet Peering
-The second option and really the easiest to deploy is to simply peer all the spoke Vnets directly that require connectivity. Like above with Option 1, inter region spokes would require global Vnet peering to communicate. Another recently introduced option to build full Vnet peering meshes is to use Azure Virtual Network Manager (AVNM). You can build intra region meshes and global peering meshes. The goal of AVNM is to manage resources at scale and simplify management overhead. Currently this is in public preview at the time of this article. [AVNM Design Considerations](https://learn.microsoft.com/en-us/azure/virtual-network-manager/overview). 
+The second method, which is notably the most straightforward to deploy, involves direct peering of all the spoke Vnets that necessitate connectivity. Similar to Option 1, inter-region spokes would require global Vnet peering for communication. An additional method, recently introduced, for constructing comprehensive Vnet peering meshes is the utilization of Azure Virtual Network Manager (AVNM). This tool facilitates the creation of both intra-region meshes and global peering meshes. The primary objective of AVNM is to manage resources on a large scale and reduce management overhead. Please note that at the time of this writing, AVNM is currently in public preview. For further details, please refer to [AVNM Design Considerations](https://learn.microsoft.com/en-us/azure/virtual-network-manager/overview). 
 
 ![image](https://github.com/adtork/MSEE-Hairpin-Design-Considerations/assets/55964102/8ec123ce-5361-40d4-b6cf-78377ec2f8d9)
 
