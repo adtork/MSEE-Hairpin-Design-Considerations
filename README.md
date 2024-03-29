@@ -9,15 +9,14 @@ The first option to get around traffic hairpinning down to the MSEE pops is to s
 ![image](https://github.com/adtork/MSEE-Hairpin-Design-Considerations/assets/55964102/20cbbdf6-6dcc-4302-a31a-076de029f3c9)
 
 **Pros:**
- - Traffic no longer hairpins to MSEE pop locations
- - Traffic no longer ingresses threw remote gws, less load
- - Control over NVAs
+ - Traffic no longer hairpins to MSEE edge pop locations
+ - Traffic no longer ingresses threw remote gateways. This takes the load off the gateways. 
+ - Granular control over NVAs
 
 **Cons:**
-
-- Cost of running the NVA/additonal VMs
- - Responsibility of managing the NVA/VMs
- - UDR Management 
+ - Cost of running the NVAs
+ - Responsibility of managing the NVAs
+ - UDR Management overheard
 
 # Option 2: Vnet Peering
 The second option and really the easiest to deploy is to simply peer all the spoke Vnets directly that require connectivity. Like above with Option 1, inter region spokes would require global Vnet peering to communicate. Another recently introduced option to build full Vnet peering meshes is to use Azure Virtual Network Manager (AVNM). You can build intra region meshes and global peering meshes. The goal of AVNM is to manage resources at scale and simplify management overhead. Currently this is in public preview at the time of this article. [AVNM Design Considerations](https://learn.microsoft.com/en-us/azure/virtual-network-manager/overview). 
@@ -25,10 +24,10 @@ The second option and really the easiest to deploy is to simply peer all the spo
 ![image](https://github.com/adtork/MSEE-Hairpin-Design-Considerations/assets/55964102/8ec123ce-5361-40d4-b6cf-78377ec2f8d9)
 
 **Pros:**
- - Easiest to setup/deploy
+ - Easy to setup/deploy
  - No administration cost
  - No UDR Management
- - Lowest latency, no VM chokepoint
+ - Lowest possibly latency. There are no VM or gateway choke points. 
 
 **Cons:**
 
@@ -43,9 +42,9 @@ The third and final option is to deploy Azure virtual WAN. The benefits to using
 
 **Pros:**
 
- - Routing is taking care of automatically via vhub routers and default route table
- - No NVAs or UDRs to manage
- - No MSEE hairpin as long as HRP is set to AS-PATH on the vHubs
+ - Routing is taking care of automatically by the Azure platform via hub routing instances.
+ - No NVAs or UDR mangement
+ - No hairpin to the MSEE edge pop if HRP is set to AS-PATH
 
 **Cons:**
 
