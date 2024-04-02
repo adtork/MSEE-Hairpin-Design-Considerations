@@ -64,6 +64,11 @@ Regarding inter-region traffic (vhub to vhub), to bypass the MSEE hairpin, it is
  - HRP may affect other routes in the environment, for example VPN and SDWAN tunnels
  - Less visability into vHubs since they are MSFT managed Vnets
 
+# Additional References
+[Connectivity between virtual networks over ExpressRoute](https://learn.microsoft.com/en-us/azure/expressroute/virtual-network-connectivity-guidance)
+<br>
+[Use Azure Firewall to route a multi hub and spoke topology](https://learn.microsoft.com/en-us/azure/firewall/firewall-multi-hub-spoke)
+
 # Conclusion
 The aforementioned outlines various design alternatives for directing traffic in both intra and inter-region designs utilizing ExpressRoute. Traditional methodologies such as implementing a 'summary route' for intra-region configurations and a 'bow-tie' for inter-region configurations should be discouraged. These approaches result in traffic continuing to hairpin at the MSEE, and increase load on the express-route gateway. As a result, these methods are not recommended for future deployments, and are discouraged moving forward! 
 
