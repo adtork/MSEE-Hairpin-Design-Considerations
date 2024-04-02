@@ -16,7 +16,7 @@ For inter-region flows, the same approach is applicable, with the addition of gl
 
 An alternative strategy for utilizing NVAs in hubs is to establish BGP peering using Azure Route Server (ARS), which eliminates the need for managing UDRs. For a detailed understanding of inter-region topology using ARS, refer to the article titled: [Multi region ARS Design](https://learn.microsoft.com/en-us/azure/route-server/multiregion#topology).
 
-![image](https://github.com/adtork/MSEE-Hairpin-Design-Considerations/assets/55964102/20cbbdf6-6dcc-4302-a31a-076de029f3c9)
+![image](https://github.com/adtork/MSEE-Hairpin-Design-Considerations/assets/55964102/74a9f81e-72cb-4fb5-996f-554182cae8c3)
 
 **Pros:**
  - Traffic no longer hairpins to MSEE edge pop locations
